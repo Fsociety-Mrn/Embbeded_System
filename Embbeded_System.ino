@@ -71,7 +71,7 @@ void LCD_PRINT(
   lcd.setCursor(0,1);
 
 // PH Level
-  lcd.print("pH level :" + String(phLvl) + "%");
+  lcd.print("pH level :" + String(phLvl));
   
   lcd.setCursor(0,2);
   
@@ -112,7 +112,9 @@ int tankLevel(int Trig, int Echo){
   long duration = pulseIn(Echo, HIGH);
 
 //return an inches
-    return duration / 74 / 2;
+    int cm = duration * 0.034 / 2;
+    int inch = cm * 0.3937 ;
+    return (inch*100)/17;
 }
 
 
