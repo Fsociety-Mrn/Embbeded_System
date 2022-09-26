@@ -17,6 +17,11 @@ int Float2 = 7; //float switch 2
 //Ph sensor analog pin
 int phSensor = A0;
 
+//solenoid valve
+int solenoidValve = 8;
+
+//water pump
+int waterPump = 9;
 
 void setup() {
   Serial.begin(9600);
@@ -32,21 +37,28 @@ void setup() {
 //float sensor
   pinMode(Float1, INPUT_PULLUP);
   pinMode(Float2, INPUT_PULLUP);
+
+//solenoid valve
+  pinMode(solenoidValve, OUTPUT);
+
+//water pump
+  pinMode(waterPump, OUTPUT);  
 }
 
 void loop() {
 
-
+   int floatSns1 = digitalRead(Float1),floatSns2 = digitalRead(Float2);
 
 //LCD print  
   LCD_PRINT(
-    tankLevel(Trig1,Echo1), //sonar 1
-    tankLevel(Trig2,Echo2), //sonar 2
+    
+    tankLevel(Trig1,Echo1,floatSns1,15), //sonar 1
+    tankLevel(Trig2,Echo2,floatSns2,20), //sonar 2
     phLevel(), //Ph Level
     100, //Humidity
     100,  //Tenperature
-    digitalRead(Float1),
-    digitalRead(Float2)
+    floatSns1,
+    floatSns2
     );
 
 }
@@ -100,7 +112,7 @@ void LCD_PRINT(
 // Group 1: Tank Filteration 
 
 //for tank level
-int tankLevel(int Trig, int Echo){
+int tankLevel(int Trig, int Echo, int level, int lvl){
   
   digitalWrite(Trig, LOW);
   delayMicroseconds(2);
@@ -114,7 +126,13 @@ int tankLevel(int Trig, int Echo){
 //return an inches
     int cm = duration * 0.034 / 2;
     int inch = cm * 0.3937 ;
-    return (inch*100)/17;
+    int percent = (inch*100)/lvl;
+    if (level){
+      return percent;
+    }else{
+      return 100;
+    }
+    
 }
 
 
@@ -159,14 +177,18 @@ float phLevel(){
 //turn off the water tank
 void turnOff(int Floats1, int Floats2){
   if (!Floats1){
-     Serial.println("Turn OFF WATER pump");
+    digitalWrite(waterPump,LOW);
+//     Serial.println("Turn OFF WATER pump");
   }else{
-    Serial.println("Turn On WATER pump");
+    digitalWrite(waterPump,HIGH);
+//    Serial.println("Turn On WATER pump");
   }
  
   if (!Floats2){
-     Serial.println("Solenoid valve off");
+     digitalWrite(solenoidValve,LOW);
+//     Serial.println("Solenoid valve off");
   }else{
-    Serial.println("Solenoid valve On");
+      digitalWrite(solenoidValve,HIGH);
+//    Serial.println("Solenoid valve On");
   }
 }
