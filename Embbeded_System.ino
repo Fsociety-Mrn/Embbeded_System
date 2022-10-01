@@ -125,9 +125,10 @@ int tankLevel(int Trig, int Echo, int level, int lvl){
 
 //return an inches
     int cm = duration * 0.034 / 2;
-    int inch = cm * 0.3937 ;
+    int inch = cm * 0.3937;
+    int percent = inch*100/lvl;
     if (level){
-      return inch*100/lvl;
+      return 100 - percent;
     }else{
       return 100;
     }
