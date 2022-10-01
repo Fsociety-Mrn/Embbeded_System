@@ -17,11 +17,11 @@ int Float2 = 7; //float switch 2
 //Ph sensor analog pin
 int phSensor = A0;
 
-//solenoid valve
-int solenoidValve = 8;
-
 //water pump
-int waterPump = 9;
+int waterPump = 8;
+
+//solenoid valve
+int solenoidValve = 9;
 
 void setup() {
   Serial.begin(9600);
@@ -52,8 +52,8 @@ void loop() {
 //LCD print  
   LCD_PRINT(
     
-    tankLevel(Trig1,Echo1,floatSns1,15), //sonar 1
-    tankLevel(Trig2,Echo2,floatSns2,20), //sonar 2
+    tankLevel(Trig1,Echo1,floatSns1,20), //sonar 1
+    tankLevel(Trig2,Echo2,floatSns2,21), //sonar 2
     phLevel(), //Ph Level
     100, //Humidity
     100,  //Tenperature
@@ -126,9 +126,8 @@ int tankLevel(int Trig, int Echo, int level, int lvl){
 //return an inches
     int cm = duration * 0.034 / 2;
     int inch = cm * 0.3937 ;
-    int percent = (inch*100)/lvl;
     if (level){
-      return percent;
+      return inch*100/lvl;
     }else{
       return 100;
     }
