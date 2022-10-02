@@ -73,6 +73,10 @@ void LCD_PRINT(
   int floatss1,
   int floatss2
   ){
+
+//  turn off water pump
+  turnOff(floatss1,floatss2);
+    
   lcd.clear();
 
 //  Tank Level
@@ -105,7 +109,7 @@ void LCD_PRINT(
   floatss2? lcd.print("Tank 2 is not full") : lcd.print("Tank 2 is full");
 
 
-  turnOff(floatss1,floatss2);
+
   delay(1000);
 }
 
