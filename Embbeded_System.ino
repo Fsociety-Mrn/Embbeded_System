@@ -150,7 +150,7 @@ float phLevel(){
   
   for(int i=0;i<10;i++) 
     { 
-      buffer_arr[i]=analogRead(A0); //push the ph raw data to array
+      buffer_arr[i]=analogRead(phSensor); //push the ph raw data to array
       delay(30);
     }
 
