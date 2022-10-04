@@ -1,6 +1,6 @@
 #include <LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27,20,4); //Edit moto pag nahinang muna i2c
+LiquidCrystal_I2C lcd(0x27,20,4); //Bago ito
 
 //Sonar Sensor 1
 int Trig1 = 2;
@@ -46,19 +46,19 @@ void setup() {
 }
 
 void loop() {
+//PH Level
+   float phLvl = phLevel();
 
-   int floatSns1 = digitalRead(Float1),floatSns2 = digitalRead(Float2);
+// tank levels
+  int tank1 = tankOneLevel(digitalRead(Float1)), 
+      tank2 = tankTwoLevel(digitalRead(Float2));
+
 
 //LCD print  
   LCD_PRINT(
-    
-    tankLevel(Trig1,Echo1,floatSns1,20), //sonar 1
-    tankLevel(Trig2,Echo2,floatSns2,21), //sonar 2
-    phLevel(), //Ph Level
-    100, //Humidity
-    100,  //Tenperature
-    floatSns1,
-    floatSns2
+    tank1, //sonar 1
+    tank2, //sonar 2
+    phLvl, //Ph Level
     );
 
 }
@@ -67,15 +67,9 @@ void loop() {
 void LCD_PRINT(
   int sonar1,
   int sonar2,
-  float phLvl,
-  int humid,
-  int soilM,
-  int floatss1,
-  int floatss2
+  float phLvl
   ){
 
-//  turn off water pump
-  turnOff(floatss1,floatss2);
     
   lcd.clear();
 
@@ -90,39 +84,45 @@ void LCD_PRINT(
   lcd.print("pH level :" + String(phLvl));
   
   lcd.setCursor(0,2);
-  
 
-//// Humid
-//  
-//  lcd.print("Humd: " + String(humid) + "% ");
-//  
-////Temperature
-//  lcd.print("Tmp: " + String(soilM) + "%");
+//tank 1
+  if (sonar1 <= 100 || sonar1 >= 80){
+      lcd.print("T1 level is Good");
+      Serial.println("T1 level is Good");
+  }else if(sonar1 < 80 || sonar1 >= 30){
+      lcd.print("T1 is moderate level");
+      Serial.println("T1 is moderate level");
+  }else{
+      lcd.print("T1 is critical level");
+      Serial.println("T1 is critical level");
+  }
 
-
-  
-// float sensor
-
-//  lcd.setCursor(0,2);
-  floatss1? lcd.print("Tank 1 is not full") : lcd.print("Tank 1 is full");
+//tank 2
   lcd.setCursor(0,3);
-  floatss2? lcd.print("Tank 2 is not full") : lcd.print("Tank 2 is full");
-
-
-
-  delay(1000);
+  if (sonar2 <= 100 || sonar1 >= 80){
+      lcd.print("T2 level is Good");
+      Serial.println("T2 level is Good");
+  }else if(sonar2 < 80 || sonar1 >= 30){
+      lcd.print("T2 is moderate level");
+      Serial.println("T2 is moderate level");
+  }else{
+      lcd.print("T2 is critical level");
+      Serial.println("T2 is critical level");
+  }
+  
+  delay(500);
 }
 
 // Group 1: Tank Filteration 
 
 //for tank level
-int tankLevel(int Trig, int Echo, int level, int lvl){
+int tankOneLevel(int level){
   
-  digitalWrite(Trig, LOW);
+  digitalWrite(Trig1, LOW);
   delayMicroseconds(2);
-  digitalWrite(Trig, HIGH);
+  digitalWrite(Trig1, HIGH);
   delayMicroseconds(10);
-  digitalWrite(Trig, LOW);
+  digitalWrite(Echo1, LOW);
 
 //  duration
   long duration = pulseIn(Echo, HIGH);
@@ -130,13 +130,38 @@ int tankLevel(int Trig, int Echo, int level, int lvl){
 //return an inches
     int cm = duration * 0.034 / 2;
     int inch = cm * 0.3937;
-    int percent = inch*100/lvl;
+    int percent = inch*100/21;
     if (level){
+      percent <= 30? digitalWrite(waterPump,HIGH) : digitalWrite(waterPump,LOW);
       return 100 - percent;
-    }else{
+    }else{ 
+      digitalWrite(waterPump,LOW);
       return 100;
     }
     
+}
+
+int tankTwoLevel(int level){
+  digitalWrite(Trig2, LOW);
+  delayMicroseconds(2);
+  digitalWrite(Trig2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(Echo2, LOW);
+
+//  duration
+  long duration = pulseIn(Echo, HIGH);
+
+//return an inches
+    int cm = duration * 0.034 / 2;
+    int inch = cm * 0.3937;
+    int percent = inch*100/20;
+    if (level){
+      digitalWrite(solenoidValve,HIGH);
+      return 100 - percent;
+    }else{ 
+      digitalWrite(solenoidValve,LOW);
+      return 100;
+    }  
 }
 
 
@@ -176,23 +201,4 @@ float phLevel(){
   float ph_act = -5.70 * volt + calibration_value;
 
   return ph_act;
-}
-
-//turn off the water tank
-void turnOff(int Floats1, int Floats2){
-  if (!Floats1){
-    digitalWrite(waterPump,LOW);
-//     Serial.println("Turn OFF WATER pump");
-  }else{
-    digitalWrite(waterPump,HIGH);
-//    Serial.println("Turn On WATER pump");
-  }
- 
-  if (!Floats2){
-     digitalWrite(solenoidValve,LOW);
-//     Serial.println("Solenoid valve off");
-  }else{
-      digitalWrite(solenoidValve,HIGH);
-//    Serial.println("Solenoid valve On");
-  }
 }
