@@ -1,27 +1,29 @@
 #include <LiquidCrystal_I2C.h>
 
 LiquidCrystal_I2C lcd(0x27,20,4); //Bago ito
+
 //Sonar Sensor 1
-int Trig1 = 2;
-int Echo1 = 3;
+#define Trig1 2
+#define Echo1 3
 
 //Sonar Sensor 2
-int Trig2 = 4;
-int Echo2 = 5;
+#define Trig2 4
+#define Echo2 5
 
 //float switch
-int Float1 = 6; //float switch 1
-int Float2 = 7; //float switch 2
+#define Float1 6 //float switch 1
+#define Float2 7 //float switch 2
 
 //Ph sensor analog pin
-int phSensor = A0;
+#define phSensor A0
 
 //water pump
-int waterPump = 8;
+#define waterPump 8
 
 //solenoid valve
-int solenoidValve = 9;
+#define solenoidValve 9
 
+// -------- SETUP -------- //
 void setup() {
   Serial.begin(9600);
   lcd.init(); 
@@ -44,9 +46,14 @@ void setup() {
   pinMode(waterPump, OUTPUT);  
 }
 
+// -------- LOOP -------- //
 void loop() {
+
+//------------ Group 1: Tank Filteration ------------// 
+ 
 //PH Level
    float phLvl = phLevel();
+   
 // floats
   int flt1 = digitalRead(Float1),
       flt2 = digitalRead(Float2);
@@ -55,8 +62,11 @@ void loop() {
   int tank1 = tankLevel(Trig1,Echo1,flt1,21), 
       tank2 = tankLevel(Trig2,Echo2,flt2,20);
 
-turnOff(tank1,tank2);
-//LCD print  
+// for turning off the Waterpumps at Solenoid
+  turnOff(tank1,tank2);
+
+
+// ------------ LCD print ------------ // 
   LCD_PRINT(
     tank1, //sonar 1
     tank2, //sonar 2
@@ -77,6 +87,7 @@ void LCD_PRINT(
 
 //  Tank Level
   lcd.print("T1: " + String(sonar1) + "%");
+//  Serial.println("T1:" + String(sonar1));
   lcd.print(" ");
   lcd.print("T2: " + String(sonar2) + "%");
 
@@ -115,10 +126,10 @@ void LCD_PRINT(
       lcd.print("Tank 2 is undefined");
   }
 
-  delay(1000);
+  delay(200);
 }
 
-// Group 1: Tank Filteration 
+//--------------------- Group 1: Tank Filteration ---------------------// 
 
 //for tank level
 int tankLevel(int Trig, int Echo, int level,int lvl){
@@ -136,8 +147,7 @@ int tankLevel(int Trig, int Echo, int level,int lvl){
     int cm = duration * 0.034 / 2;
     int inch = cm * 0.3937;
     int percent = inch*100/lvl;
-    if (level){
-
+    if (level == 1){
       return 100 - percent;
     }else{ 
 //      digitalWrite(sole,LOW);
@@ -188,14 +198,13 @@ float phLevel(){
 //turn off Water Tank and close solenoid
 void turnOff(int sonar1, int sonar2){
 
-  if(sonar1 <= 40 || sonar1 >= 100){
+  if(sonar1 < 100 && sonar1 > 40){
     digitalWrite(waterPump,HIGH);
- 
   }else{
     digitalWrite(waterPump,LOW);
   }
 
-    if(sonar2 < 100 || sonar2 >= 40){
+  if(sonar2 < 100 && sonar2 > 40){
     digitalWrite(solenoidValve,HIGH);
  
   }else{
