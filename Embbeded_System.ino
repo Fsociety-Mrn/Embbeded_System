@@ -1,4 +1,5 @@
 #include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 
 LiquidCrystal_I2C lcd(0x27,20,4); //Bago ito
 
@@ -63,7 +64,7 @@ void loop() {
       tank2 = tankLevel(Trig2,Echo2,flt2,20);
 
 // for turning off the Waterpumps at Solenoid
-  turnOff(tank1,tank2);
+  turnOff(tank1,flt2);
 
 
 // ------------ LCD print ------------ // 
@@ -204,7 +205,7 @@ void turnOff(int sonar1, int sonar2){
     digitalWrite(waterPump,LOW);
   }
 
-  if(sonar2 < 100 && sonar2 > 40){
+  if(sonar2 == 1){
     digitalWrite(solenoidValve,HIGH);
  
   }else{
