@@ -66,7 +66,6 @@ void loop() {
 // for turning off the Waterpumps at Solenoid
   turnOff(tank1,flt2);
 
-
 // ------------ LCD print ------------ // 
   LCD_PRINT(
     tank1, //sonar 1
@@ -199,13 +198,14 @@ float phLevel(){
 //turn off Water Tank and close solenoid
 void turnOff(int sonar1, int sonar2){
 
-  if(sonar1 < 100 && sonar1 > 40){
+  if(sonar1 < 100 && sonar1 >= 0){
     digitalWrite(waterPump,HIGH);
+    
   }else{
     digitalWrite(waterPump,LOW);
   }
 
-  if(sonar2 == 1){
+  if(sonar2 < 100 && sonar2 >= 0){
     digitalWrite(solenoidValve,HIGH);
  
   }else{
