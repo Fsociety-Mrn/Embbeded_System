@@ -1,5 +1,5 @@
 #include <LiquidCrystal_I2C.h>
-
+#include <Servo.h> 
 LiquidCrystal_I2C lcd(0x27,20,4); 
 
 //updated
@@ -23,11 +23,13 @@ LiquidCrystal_I2C lcd(0x27,20,4);
 #define waterPump  D9
 
 //solenoid valve
-#define valve  D10
+#define servoPin  D10
 
-
+// Create a servo object 
+Servo Servo1; 
 void setup() {
   Serial.begin(9600);
+  Servo1.attach(servoPin); 
   lcd.init(); 
   lcd.backlight(); 
 
@@ -44,8 +46,6 @@ void setup() {
 //water pump
   pinMode(waterPump, OUTPUT);
 
-//solenoid valve  
-  pinMode(valve, OUTPUT);
 }
 
 void loop() {
@@ -106,42 +106,34 @@ void LCD_PRINT(
   lcd.setCursor(0,3);
   floatss2? lcd.print("Tank 2 is not full") : lcd.print("Tank 2 is full");
 
-  if (sonar2 <= 50 ){
+  if (sonar1 <= 50 ){
 
-        digitalWrite(waterPump,LOW);
-          digitalWrite(valve,LOW);
-               Serial.println("BOMBA");
+      digitalWrite(waterPump,LOW);
+        Servo1.write(185); 
+         Serial.println("BOMBA");
+         
   }
-  else if(sonar2 >= 100){
+  if(sonar1 >= 90){
+    
+ if(sonar1 >= 90 && sonar2 >= 90){
 
+          digitalWrite(waterPump,HIGH);
+              Servo1.write(185); 
+                Serial.println("SAME");
 
- digitalWrite(waterPump,HIGH);
-  digitalWrite(valve,HIGH);
-  Serial.println("Tigil bomba");
-  }
-   else if(sonar1 >= 100 || sonar2 >= 100){
+    }
+    else {
+          digitalWrite(waterPump,HIGH);
+              Servo1.write(70); 
+                Serial.println("Tigil bomba");
 
-
- digitalWrite(waterPump,HIGH);
-  digitalWrite(valve,HIGH);
-  Serial.println("Tigil bomba");
-  }
-  else{
-
-  Serial.println("PARO pARO g");
-
+    }
+           
 
   }
-if (sonar1 <= 50 ){
-
-          digitalWrite(valve,HIGH);
-               Serial.println("BOMBA");
-  }
-
-  delay(1000);
-
-
-
+  
+  
+ 
 
 
 }
@@ -149,27 +141,52 @@ if (sonar1 <= 50 ){
 // Group 1: Tank Filteration 
 
 //for tank level
+
 int tankLevel(int Trig, int Echo, int lvel, int floatLevel){
+
   
+
   digitalWrite(Trig, LOW);
+
   delayMicroseconds(2);
+
   digitalWrite(Trig, HIGH);
+
   delayMicroseconds(10);
+
   digitalWrite(Trig, LOW);
+
+
+
 
 //  duration
+
   long duration = pulseIn(Echo, HIGH);
 
+
+
+
 //return an inches
+
   int inches = duration / 74 / 2;
 
+  int percent = inches * 100 / lvel;
+
   if (floatLevel){
-    return inches * 100 / lvel;
+
+    return 100 - percent;
+
   }else{
+
     return 100;
+
   }
 
+
+
+
     // return inches;
+
 }
 
 
