@@ -144,10 +144,6 @@ else if(sonar2 == 100 && sonar1 > 50 ){
   
   
   
-  
- 
-
-
 }
 
 // Group 1: Tank Filteration 
@@ -155,9 +151,7 @@ else if(sonar2 == 100 && sonar1 > 50 ){
 //for tank level
 
 int tankLevel(int Trig, int Echo, int lvel, int floatLevel){
-
   
-
   digitalWrite(Trig, LOW);
 
   delayMicroseconds(2);
@@ -190,15 +184,10 @@ int tankLevel(int Trig, int Echo, int lvel, int floatLevel){
 
   }else{
 
-    return 100;
+    return 90;
 
   }
-
-
-
-
     // return inches;
-
 }
 
 
@@ -206,7 +195,7 @@ int tankLevel(int Trig, int Echo, int lvel, int floatLevel){
 int buffer_arr[10],temp;
 
 float phLevel(){
-  float calibration_value = 21.34 + 1.80;
+  float calibration_value = 21.34 + 7.80;
 //    float calibration_value = 21.34;
   unsigned long int avgval = 0; 
   
@@ -241,7 +230,7 @@ float phLevel(){
 }
 
 //turn off the water tank
-void turnOff(int Floats1, int Floats2){
+//void turnOff(int Floats1, int Floats2){
 //if(Floats1 == 0) 
  // {
  //   digitalWrite(waterPump,HIGH);
@@ -261,4 +250,4 @@ void turnOff(int Floats1, int Floats2){
  // digitalWrite(valve,LOW);
     // Serial.println("Turn On WATER pump");
  // }
-}
+//}
