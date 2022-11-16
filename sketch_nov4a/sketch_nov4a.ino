@@ -55,7 +55,7 @@ void loop() {
 //LCD print  
   LCD_PRINT(
     tankLevel(Trig1,Echo1,21,digitalRead(Float1)), //sonar 1
-    tankLevel(Trig2,Echo2,20,digitalRead(Float2)), //sonar 2
+    tankLevel(Trig2,Echo2,21,digitalRead(Float2)), //sonar 2
     phLevel(), //Ph Level
     100, //Humidity
     100,  //Tenperature
@@ -109,28 +109,40 @@ void LCD_PRINT(
   if (sonar1 <= 50 ){
 
       digitalWrite(waterPump,LOW);
-        Servo1.write(185); 
+        Servo1.write(180); 
          Serial.println("BOMBA");
          
   }
-  if(sonar1 >= 90){
+   if(sonar1 >= 90){
     
  if(sonar1 >= 90 && sonar2 >= 90){
 
           digitalWrite(waterPump,HIGH);
-              Servo1.write(185); 
+              Servo1.write(180); 
                 Serial.println("SAME");
 
     }
+
+else if(sonar2 == 100 && sonar1 > 50 ){
+
+ Servo1.write(180); 
+
+}
     else {
           digitalWrite(waterPump,HIGH);
-              Servo1.write(70); 
+              Servo1.write(0); 
                 Serial.println("Tigil bomba");
 
     }
            
 
   }
+
+    
+
+
+  
+  
   
   
  
